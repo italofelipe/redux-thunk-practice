@@ -1,19 +1,39 @@
 import React, { Component } from "react";
 import API from "../utils/API";
 import { connect } from "react-redux";
-
+import { fetchPosts } from "../actions";
+import UserHeader from "./UserHeader";
 class PostList extends Component {
   componentDidMount = async () => {
-    const API_CALL = await API.get(`/posts`);
-    console.log(API_CALL.data);
+    // Vindo diretamente das Actions
+    this.props.fetchPosts();
+  };
+  renderList = () => {
+    return this.props.posts.map(post => {
+      return (
+        <div className="item" key={post.id}>
+          <i className="large middle aligned icon user" />
+          <div className="content">
+            <div className="description">
+              <h4>{post.title}</h4>
+              <p>{post.body}</p>
+            </div>
+            <UserHeader userId={post.userId} />
+          </div>
+        </div>
+      );
+    });
   };
   render() {
-    return (
-      <div>
-        <h3>Post List Component</h3>
-      </div>
-    );
+    console.log(this.props.posts);
+    return <div className="ui relaxed divided list">{this.renderList()}</div>;
   }
 }
+const mapStateToProps = state => {
+  return { posts: state.posts };
+};
 
-export default PostList;
+export default connect(
+  mapStateToProps,
+  { fetchPosts: fetchPosts }
+)(PostList);
